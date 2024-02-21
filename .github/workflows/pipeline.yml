@@ -21,11 +21,6 @@ jobs:
         run: npm run test
       - name: Check build
         run: npm run build
-      - name: Start server and wait until it's ready
-        run: |
-          npm run start-prod &
-          npm install wait-on
-          npx wait-on http://localhost:5000
       - name: e2e tests
         uses: cypress-io/github-action@v5
         with:
