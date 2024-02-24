@@ -16,7 +16,7 @@ module.exports = { // eslint-disable-line
   plugins: ['react', 'jest'],
   rules: {
     indent: ['error', 2],
-    'linebreak-style': ['error', 'windows'],
+    'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     eqeqeq: 'error',
