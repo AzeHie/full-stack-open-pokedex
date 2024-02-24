@@ -1,8 +1,8 @@
-const { defineConfig } = require("cypress");
+const { defineConfig } = require("cypress"); // eslint-disable-line
 
-module.exports = defineConfig({
+module.exports = defineConfig({ // eslint-disable-line
   e2e: {
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on, config) { // eslint-disable-line
       // implement node event listeners here
     },
   },

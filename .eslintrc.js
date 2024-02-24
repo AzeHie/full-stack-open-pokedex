@@ -1,4 +1,5 @@
-module.exports = {
+
+module.exports = { // eslint-disable-line
   env: {
     browser: true,
     es6: true,
@@ -15,7 +16,7 @@ module.exports = {
   plugins: ['react', 'jest'],
   rules: {
     indent: ['error', 2],
-    'linebreak-style': ['error', 'unix'],
+    'linebreak-style': ['error', 'windows'],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     eqeqeq: 'error',
@@ -24,5 +25,8 @@ module.exports = {
     'arrow-spacing': ['error', { before: true, after: true }],
     'no-console': 'error',
     'react/prop-types': 0,
+  },
+  globals: {
+    cy: true,
   },
 };
