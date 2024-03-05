@@ -9,6 +9,22 @@ on:
     types: [opened, synchronize]
 
 jobs:
+  a_test_job:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: github context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: commits
+        env:
+          COMMITS: ${{ toJson(github.event.commits) }}
+        run: echo "$COMMITS"
+      - name: commit messages
+        env:
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
+        run: echo "$COMMIT_MESSAGES"
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
     steps:
@@ -31,4 +47,25 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
       - name: Trigger deployment
-        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          if [ ${{ steps.check_commit_message.outputs.skip }} == 'true' ]; then
+            echo "Skipping deployment because commit message contains #skip."
+          else
+            curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+          fi
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check commit message for #skip
+        id: check_commit_message
+        run: echo "::set-output name=skip::$(if grep -q '#skip' "$GITHUB_EVENT_PATH"; then echo 'true'; else echo 'false'; fi)"
+        shell: bash
+      - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' && steps.check_commit_message.outputs.skip != 'true' }}
+        uses: anothrNick/github-tag-action@1.64.0
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
