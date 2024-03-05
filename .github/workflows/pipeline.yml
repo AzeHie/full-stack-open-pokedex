@@ -32,9 +32,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16.19.0
-      - name: set outputs
-        run: echo "::set-output name=skip::$(if grep -q '#skip' "$GITHUB_EVENT_PATH"; then echo 'true'; else echo 'false'; fi)"
-        shell: bash
       - name: Install dependecies
         run: npm ci
       - name: Check style
@@ -49,10 +46,14 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
+      - name: Check commit message for #skip
+        id: check_commit_message
+        run: echo "::set-output name=skip::$(if grep -q '#skip' "$GITHUB_EVENT_PATH"; then echo 'true'; else echo 'false'; fi)"
+        shell: bash
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && steps.check_commit_message.outputs.skip != 'true' }}
         run: |
-          curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+          curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
