@@ -48,7 +48,7 @@ jobs:
           wait-on: http://localhost:5000
       - name: Check commit message for #skip
         id: check_commit_message
-        run: echo "{skip}={$(if grep -q '#skip' "$GITHUB_EVENT_PATH"; then echo 'true'; else echo 'false'; fi)}" >> $GITHUB_OUTPUT 
+        run: echo "skip=$(if grep -q '#skip' "$GITHUB_EVENT_PATH"; then echo 'true'; else echo 'false'; fi)" >> $GITHUB_OUTPUT 
         shell: bash
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && steps.check_commit_message.outputs.skip != 'true' }}
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check commit message for #skip
         id: check_commit_message
-        run: echo "{skip}={$(if grep -q '#skip' "$GITHUB_EVENT_PATH"; then echo 'true'; else echo 'false'; fi)}" >> $GITHUB_OUTPUT 
+        run: echo "skip=$(if grep -q '#skip' "$GITHUB_EVENT_PATH"; then echo 'true'; else echo 'false'; fi)" >> $GITHUB_OUTPUT 
         shell: bash
       - name: Bump version and push tag
         if: ${{ github.event_name == 'push' && steps.check_commit_message.outputs.skip != 'true' }}
