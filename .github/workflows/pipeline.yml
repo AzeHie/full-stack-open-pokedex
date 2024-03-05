@@ -47,13 +47,9 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && steps.check_commit_message.outputs.skip != 'true' }}
         run: |
-          if [ ${{ steps.check_commit_message.outputs.skip }} == 'true' ]; then
-            echo "Skipping deployment because commit message contains #skip."
-          else
-            curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-          fi
+          curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
