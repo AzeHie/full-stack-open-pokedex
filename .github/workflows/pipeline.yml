@@ -54,6 +54,20 @@ jobs:
         if: ${{ github.event_name == 'push' && steps.check_commit_message.outputs.skip != 'true' }}
         run: |
           curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: Notify success deployment
+        if: success()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          severity: info
+          details: Deployment succeeded
+      - name: Notify failed deployment
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          severity: error
+          details: Deployment failed
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
