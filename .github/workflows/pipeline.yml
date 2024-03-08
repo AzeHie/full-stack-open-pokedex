@@ -56,20 +56,18 @@ jobs:
           curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
       - name: Notify success deployment
         if: success()
-        uses: jacobtomlinson/discord-webhook-notify@v1
+        uses: rjstone/discord-webhook-notify@v1
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: success
-          message: "New version deployed successfully."
+          severity: info
+          details: Deployment succeeded
       - name: Notify failed deployment
         if: failure()
-        uses: jacobtomlinson/discord-webhook-notify@v1
+        uses: rjstone/discord-webhook-notify@v1
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: failure
-          message: |
-            Building failed!
-            Last commit: ${{ github.sha }}
+          severity: error
+          details: Deployment failed
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
